@@ -112,6 +112,7 @@ app.delete("/specialist/:specialistId", async function (req, res) {
 
 // skills
 app.get("/skill", async function (req, res) {
+  console.log("HERE")
   var skillList = await database.getSkillList();
 
   if (skillList != null) {

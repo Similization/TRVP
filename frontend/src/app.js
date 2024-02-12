@@ -293,14 +293,6 @@ export default class App {
       const specialistId = specialistSelect.value;
 
       try {
-        // Use the SkillApi class to add the skill to the database
-        const response = await InterviewApi.createInterview(
-          name,
-          startTime,
-          specialistId,
-          skills
-        );
-        console.log(response);
         // Fetch specialist skills from the database
         const specialist = await SpecialistApi.getSpecialist(specialistId);
         const specialistSkills = specialist.skills;

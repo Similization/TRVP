@@ -96,10 +96,10 @@ export default class Interview {
     });
     interviewListItem.appendChild(skillsList);
 
-    const updateButton = document.createElement("button");
-    updateButton.textContent = "Update";
-    updateButton.addEventListener("click", () => this.handleUpdate());
-    interviewListItem.appendChild(updateButton);
+    // const updateButton = document.createElement("button");
+    // updateButton.textContent = "Update";
+    // updateButton.addEventListener("click", () => this.handleUpdate());
+    // interviewListItem.appendChild(updateButton);
 
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
@@ -110,7 +110,7 @@ export default class Interview {
     interviewsList.appendChild(interviewListItem);
   }
 
-  handleUpdate() {}
+  // handleUpdate() {}
 
   handleDelete() {
     try {

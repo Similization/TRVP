@@ -260,7 +260,7 @@ class Database {
         });
         return skills;
       } else {
-        return null;
+        return [];
       }
     } catch (err) {
       console.error("Error executing query", err);
@@ -404,7 +404,8 @@ class Database {
         });
         return result.rows;
       } else {
-        console.log(`Interview with ID ${interviewId} not found.`);
+        console.log(`Interviews not found.`);
+        return []
       }
     } catch (err) {
       console.error("Error executing query", err);
