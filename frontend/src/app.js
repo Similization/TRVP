@@ -6,6 +6,15 @@ import SkillApi from "./api/skill.js";
 import SpecialistApi from "./api/specialist.js";
 import InterviewApi from "./api/interview.js";
 
+function calculatePercentageSharedSkills(skillArray1, skillArray2) {
+  const sharedSkills = skillArray1.filter((skill) =>
+    skillArray2.includes(skill)
+  );
+  const percentageSharedSkills =
+    (sharedSkills.length / skillArray1.length) * 100;
+  return percentageSharedSkills;
+}
+
 export default class App {
   #skills = [];
   #specialists = [];
@@ -134,6 +143,73 @@ export default class App {
       }
     });
 
+    // Now, you can handle the selected skills when needed, for example, on form submission
+    const updateSpecialistForm = document.getElementById(
+      "updateSpecialistForm"
+    );
+    updateSpecialistForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      // Get the selected skill IDs
+      const selectedSkillCheckboxes = document.querySelectorAll(
+        'input[name="updatedSkills"]:checked'
+      );
+      const selectedSkillIDs = Array.from(selectedSkillCheckboxes).map(
+        (checkbox) => checkbox.value
+      );
+
+      // Use the selected skill IDs as needed
+      console.log("Selected Skill IDs:", selectedSkillIDs);
+    });
+
+    // Handle form submission
+    updateSpecialistForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      // Get form data
+      const id = document.getElementById("updateSpecialistID").textContent;
+      const name = document.getElementById("updateSpecialistName").value;
+      const startTime = document.getElementById("updateStartTime").value;
+      const endTime = document.getElementById("updateEndTime").value;
+
+      // Get the selected skill IDs
+      const selectedSkillCheckboxes = document.querySelectorAll(
+        'input[name="updatedSkills"]:checked'
+      );
+      const skills = Array.from(selectedSkillCheckboxes).map(
+        (checkbox) => checkbox.value
+      );
+
+      try {
+        // Use the SkillApi class to add the skill to the database
+        const response = await SpecialistApi.updateSpecialist(
+          id,
+          name,
+          startTime,
+          endTime,
+          skills
+        );
+        document.getElementById("add-specialist-form").style.display = "block";
+        document.getElementById("update-specialist-form").style.display =
+          "none";
+
+        const specialistListItem = document.querySelector(
+          `[data-specialist-id="${id}"]`
+        );
+        if (specialistListItem) {
+          specialistListItem.remove();
+        } else {
+          console.error(`Specialist with ID ${id} not found in the DOM.`);
+        }
+
+        const specialist = new Specialist(response);
+        specialist.render();
+      } catch (error) {
+        console.error("Error creating specialist:", error);
+        alert("Error creating specialist. Please try again.");
+      }
+    });
+
     const addSkillForm = document.getElementById("addSkillForm");
 
     addSkillForm.addEventListener("submit", async (event) => {
@@ -199,6 +275,20 @@ export default class App {
         (checkbox) => checkbox.value
       );
 
+      // Get all checked checkboxes
+      const selectedCheckboxes = document.querySelectorAll(
+        'input[name="selectedSkills"]:checked'
+      );
+
+      // Map the checked checkboxes to an array of skill names
+      const selectedSkillNames = Array.from(selectedCheckboxes).map(
+        (checkbox) => {
+          // Retrieve the label text associated with the checkbox
+          const label = checkbox.parentElement;
+          return label.textContent.trim(); // Trim any extra white spaces
+        }
+      );
+
       // Get the selected specialist ID
       const specialistId = specialistSelect.value;
 
@@ -211,8 +301,34 @@ export default class App {
           skills
         );
         console.log(response);
-        const interview = new Interview(response);
-        interview.render();
+        // Fetch specialist skills from the database
+        const specialist = await SpecialistApi.getSpecialist(specialistId);
+        const specialistSkills = specialist.skills;
+
+        // Calculate the percentage of shared skills
+        const percentageSharedSkills = calculatePercentageSharedSkills(
+          selectedSkillNames,
+          specialistSkills
+        );
+
+        // Check if the percentage is above the threshold (e.g., 80%)
+        if (percentageSharedSkills >= 80) {
+          // Proceed with creating the interview
+          const response = await InterviewApi.createInterview(
+            name,
+            startTime,
+            specialistId,
+            skills
+          );
+          console.log(response);
+          const interview = new Interview(response);
+          interview.render();
+        } else {
+          // Display an error or prevent the form submission
+          alert("Insufficient shared skills with the specialist.");
+
+          // You can display an error message or prevent the form submission here.
+        }
       } catch (error) {
         console.error("Error:", error);
       }

@@ -20,6 +20,7 @@ export default class Specialist {
     this.#startTime = specialist_start_time;
     this.#endTime = specialist_end_time;
     this.#skills = skills;
+    console.log(skills)
   }
 
   get specialistID() {
@@ -120,36 +121,6 @@ export default class Specialist {
     specialistsList.appendChild(specialistListItem);
   }
 
-  // handleUpdate() {
-  //   // Get updated values from the update form
-  //   const updatedName = document.getElementById("updateSpecialistName").value;
-  //   const updatedStartTime = document.getElementById("updateStartTime").value;
-  //   const updatedEndTime = document.getElementById("updateEndTime").value;
-
-  //   // Get selected skills from the update form
-  //   const updatedSkills = [];
-  //   const updateSkillsCheckboxes = document.querySelectorAll(
-  //     'input[name="updateSpecialistSkills"]:checked'
-  //   );
-  //   updateSkillsCheckboxes.forEach((checkbox) =>
-  //     updatedSkills.push(checkbox.value)
-  //   );
-
-  //   // Assume there's a method to update specialist data on the server
-  //   SpecialistApi.updateSpecialist(
-  //     this.#specialistID,
-  //     updatedName,
-  //     updatedStartTime,
-  //     updatedEndTime,
-  //     updatedSkills
-  //   );
-
-  //   // Assuming you have a render method to refresh the UI with updated data
-  //   this.render();
-
-  //   // After updating, show the add specialist form and hide the update specialist form
-  // }
-
   // Assuming you have a handleUpdate function
   handleUpdate(event) {
     // Fetch specialist data and update the "Update Specialist" form
@@ -157,19 +128,29 @@ export default class Specialist {
 
     // Fetch specialist data from the list item
     const specialistId = specialistListItem.dataset.specialistId;
-    console.log(specialistId)
-    const response = SpecialistApi.getSpecialist(specialistId);
+    console.log(specialistId);
+    const promise = SpecialistApi.getSpecialist(specialistId);
     // Show the "Update Specialist" form and hide the "Add Specialist" form
     document.getElementById("add-specialist-form").style.display = "none";
     document.getElementById("update-specialist-form").style.display = "block";
 
     // Call a function to fill the "Update Specialist" form with the fetched data
-    this.fillUpdateForm(response);
+    promise
+      .then((result) => {
+        this.fillUpdateForm(result);
+        // Continue with synchronous logic using the result
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 
   // Function to fill the "Update Specialist" form
-  fillUpdateForm(id, name, startTime, endTime, skills) {
+  fillUpdateForm(specialist) {
     // Assuming there are input fields and checkboxes in the update form
+    const updateSpecialistId = document.getElementById(
+      "updateSpecialistID"
+    );
     const updateSpecialistNameInput = document.getElementById(
       "updateSpecialistName"
     );
@@ -180,31 +161,38 @@ export default class Specialist {
     );
 
     // Fill in the input fields with the fetched data
-    updateSpecialistNameInput.value = name;
-    updateStartTimeInput.value = startTime;
-    updateEndTimeInput.value = endTime;
+
+    updateSpecialistId.textContent = specialist.specialist_id
+    updateSpecialistNameInput.value = specialist.specialist_name;
+    updateStartTimeInput.value = specialist.specialist_start_time;
+    updateEndTimeInput.value = specialist.specialist_end_time;
 
     // Clear any existing checkboxes in the skills list
     updateSkillsCheckboxList.innerHTML = "";
 
     // Fetch all available skills (you need to implement this)
-    const allSkills = SkillApi.getSkillList();
+    const allSkillsPromise = SkillApi.getSkillList();
+    allSkillsPromise
+      .then((allSkills) => {
+        console.log(allSkills)
+        allSkills.forEach((skill) => {
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = `updateSkillCheckbox_${skill.skill_id}`;
+          checkbox.name = "updatedSkills";
+          checkbox.value = skill.skill_id;
+          checkbox.checked = specialist.skills.includes(skill.skill_name);
 
-    // Create checkboxes for each skill and append them to the skills list
-    allSkills.forEach((skill) => {
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.id = `updateSkillCheckbox_${skill.id}`;
-      checkbox.value = skill.id;
-      checkbox.checked = skills.includes(skill.name);
+          const label = document.createElement("label");
+          label.textContent = skill.skill_name;
 
-      const label = document.createElement("label");
-      label.textContent = skill.name;
-      label.htmlFor = `updateSkillCheckbox_${skill.id}`;
-
-      updateSkillsCheckboxList.appendChild(checkbox);
-      updateSkillsCheckboxList.appendChild(label);
-    });
+          label.appendChild(checkbox);
+          updateSkillsCheckboxList.appendChild(label);
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
     // Show the "Update Specialist" form and hide the "Add Specialist" form
     document.getElementById("add-specialist-form").style.display = "none";

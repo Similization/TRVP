@@ -59,6 +59,9 @@
                 <h3>Update Specialist</h3>
                 <form id="updateSpecialistForm">
                     <!-- Form fields for updating a specialist -->
+                    <label for="updateSpecialistID">Specialist ID:</label>
+                    <p id="updateSpecialistID" contenteditable="false"></p>
+
                     <label for="updateSpecialistName">Full Name:</label>
                     <input type="text" id="updateSpecialistName" required>
 
@@ -75,7 +78,7 @@
 
                     <!-- Add more form fields as needed -->
 
-                    <button type="button" id="saveUpdateSpecialistBtn">Save</button>
+                    <button type="submit" id="saveUpdateSpecialistBtn">Save</button>
                 </form>
             </div>
         </section>
@@ -112,32 +115,74 @@
             </ul>
         </section>
 
+
+        <!-- Interview Management Section -->
+        <section id="interview-management">
+            <h2>Interview Management</h2>
+
+            <!-- Add Interview Form -->
+            <div id="add-interview-form">
+                <h2>Add Interview</h2>
+                <form id="addInterviewForm">
+                    <!-- Form fields for managing interviews -->
+                    <label for="candidateName">Candidate Name:</label>
+                    <input type="text" id="candidateName" required>
+
+                    <label for="interviewTime">Interview Time:</label>
+                    <input type="time" id="interviewTime" required>
+
+                    <label for="interviewSkills">Interview Skills:</label>
+                    <div id="skillsInterviewCheckboxList">
+                        <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
+                    </div>
+
+                    <!-- Specialist Dropdown -->
+                    <label for="specialistSelect">Select Specialist:</label>
+                    <select id="specialistSelect" required>
+                        <!-- Options will be dynamically added here using JavaScript -->
+                    </select>
+
+                    <!-- Add more form fields as needed -->
+
+                    <button type="submit" id="manageInterviewsBtn">Manage Interviews</button>
+                </form>
+            </div>
+
+            <!-- Update Interview Form -->
+            <div id="update-interview-form" style="display: none;">
+                <h2>Update Interview</h2>
+                <form id="updateInterviewForm">
+                    <!-- Form fields for managing interviews -->
+
+                    <label for="updateInterviewID">Interview ID:</label>
+                    <p id="updateInerviewID" contenteditable="false"></p>
+
+                    <label for="candidateName">Candidate Name:</label>
+                    <input type="text" id="updateCandidateName" required>
+
+                    <label for="interviewTime">Interview Time:</label>
+                    <input type="time" id="updateInterviewTime" required>
+
+                    <label for="interviewSkills">Interview Skills:</label>
+                    <div id="updateSkillsInterviewCheckboxList">
+                        <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
+                    </div>
+
+                    <!-- Specialist Dropdown -->
+                    <label for="updateSpecialistSelect">Select Specialist:</label>
+                    <select id="updateSpecialistSelect" required>
+                        <!-- Options will be dynamically added here using JavaScript -->
+                    </select>
+
+                    <!-- Add more form fields as needed -->
+
+                    <button type="submit" id="updateInterviewsBtn">Save</button>
+                </form>
+            </div>
+        </section>
         <!-- Manage Interviews Form -->
         <section id="add-interview">
-            <h2>Add Interview</h2>
-            <form id="addInterviewForm">
-                <!-- Form fields for managing interviews -->
-                <label for="candidateName">Candidate Name:</label>
-                <input type="text" id="candidateName" required>
 
-                <label for="interviewTime">Interview Time:</label>
-                <input type="time" id="interviewTime" required>
-
-                <label for="interviewSkills">Interview Skills:</label>
-                <div id="skillsInterviewCheckboxList">
-                    <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
-                </div>
-
-                <!-- Specialist Dropdown -->
-                <label for="specialistSelect">Select Specialist:</label>
-                <select id="specialistSelect" required>
-                    <!-- Options will be dynamically added here using JavaScript -->
-                </select>
-
-                <!-- Add more form fields as needed -->
-
-                <button type="submit" id="manageInterviewsBtn">Manage Interviews</button>
-            </form>
         </section>
 
     </main>

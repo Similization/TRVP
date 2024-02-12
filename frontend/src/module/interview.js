@@ -96,6 +96,11 @@ export default class Interview {
     });
     interviewListItem.appendChild(skillsList);
 
+    const updateButton = document.createElement("button");
+    updateButton.textContent = "Update";
+    updateButton.addEventListener("click", () => this.handleUpdate());
+    interviewListItem.appendChild(updateButton);
+
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", () => this.handleDelete());
@@ -104,6 +109,8 @@ export default class Interview {
     const interviewsList = document.getElementById("interviews");
     interviewsList.appendChild(interviewListItem);
   }
+
+  handleUpdate() {}
 
   handleDelete() {
     try {

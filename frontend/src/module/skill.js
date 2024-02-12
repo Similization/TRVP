@@ -60,6 +60,15 @@ export default class Skill {
 
       // Check if the user provided a new skill name
       if (newSkillName !== null) {
+        const skillListItem = document.querySelector(
+          `[data-skill-id="${this.#skillID}"]`
+        );
+        if (skillListItem) {
+          skillListItem.remove();
+          console.log(`Skill with ID ${this.#skillID} deleted successfully.`);
+        } else {
+          console.error(`Skill with ID ${this.#skillID} not found in the DOM.`);
+        }
         // Update the skill name in the frontend
         this.#name = newSkillName;
         this.render(); // Re-render the skill with the updated name

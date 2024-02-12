@@ -74,7 +74,7 @@ app.post("/specialist", async function (req, res) {
   );
 
   if (specialistCreate != null) {
-    sendGoodResponse(res, "Specialist created");
+    sendGoodResponse(res, specialistCreate);
   } else {
     sendBadResponse(res, 500, "Something went wrong");
   }
@@ -93,7 +93,7 @@ app.patch("/specialist/:specialistId", async function (req, res) {
   );
 
   if (specialistUpdate != null) {
-    sendGoodResponse(res, "Specialist updated");
+    sendGoodResponse(res, specialistUpdate);
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
   }

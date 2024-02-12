@@ -123,8 +123,8 @@ class Database {
       }
 
       console.log(`Specialist with ID ${specialistId} created successfully.`);
-      const spcialist = await this.getSpecialist(specialistId);
-      return spcialist;
+      const specialist = await this.getSpecialist(specialistId);
+      return specialist;
     } catch (err) {
       console.error("Error creating specialist", err);
     } finally {
@@ -174,6 +174,7 @@ class Database {
       }
 
       console.log(`Specialist with ID ${specialistId} updated successfully.`);
+      return await this.getSpecialist(specialistId)
     } catch (err) {
       console.error("Error updating specialist", err);
     } finally {
