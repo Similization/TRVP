@@ -32,7 +32,7 @@ class Database {
       await this.client.connect();
 
       const sqlQuery = `
-                SELECT specialist.id AS specialist_id, specialist.name AS specialist_name, specialist.start_time AS specialist_start_time, specialist.end_time AS specialist_end_time, array_agg(skill.name) AS skills
+                SELECT specialist.id AS specialist_id, specialist.name AS specialist_name, specialist.start_time AS specialist_start_time, specialist.end_time AS specialist_end_time, COALESCE(jsonb_agg(skill.name) FILTER (WHERE skill.name IS NOT NULL), '[]'::jsonb) AS skills
                 FROM specialist
                 LEFT JOIN specialist_skill ON specialist.id = specialist_skill.specialist
                 LEFT JOIN skill ON specialist_skill.skill = skill.id
@@ -47,8 +47,8 @@ class Database {
         console.log(
           `Specialist ID: ${row.specialist_id}, Name: ${
             row.specialist_name
-          }, Start time: ${row.start_time}, End time: ${
-            row.end_time
+          }, Start time: ${row.specialist_start_time}, End time: ${
+            row.specialist_end_time
           }, Skills: ${row.skills.join(", ")}`
         );
       } else {
@@ -68,7 +68,7 @@ class Database {
       await this.client.connect();
 
       const sqlQuery = `
-            SELECT specialist.id AS specialist_id, specialist.name AS specialist_name, specialist.start_time AS specialist_start_time, specialist.end_time AS specialist_end_time, array_agg(skill.name) AS skills
+            SELECT specialist.id AS specialist_id, specialist.name AS specialist_name, specialist.start_time AS specialist_start_time, specialist.end_time AS specialist_end_time, COALESCE(jsonb_agg(skill.name) FILTER (WHERE skill.name IS NOT NULL), '[]'::jsonb) AS skills
                 FROM specialist
                 LEFT JOIN specialist_skill ON specialist.id = specialist_skill.specialist
                 LEFT JOIN skill ON specialist_skill.skill = skill.id
@@ -82,8 +82,8 @@ class Database {
         console.log(
           `Specialist ID: ${row.specialist_id}, Name: ${
             row.specialist_name
-          }, Start time: ${row.start_time}, End time: ${
-            row.end_time
+          }, Start time: ${row.specialist_start_time}, End time: ${
+            row.specialist_end_time
           }, Skills: ${row.skills.join(", ")}`
         );
       });
@@ -123,6 +123,8 @@ class Database {
       }
 
       console.log(`Specialist with ID ${specialistId} created successfully.`);
+      const spcialist = await this.getSpecialist(specialistId);
+      return spcialist;
     } catch (err) {
       console.error("Error creating specialist", err);
     } finally {
@@ -217,7 +219,7 @@ class Database {
       const sqlQuery = `
                 SELECT skill.id AS skill_id, skill.name AS skill_name
                 FROM skill
-                WHERE specialist.id = $1;
+                WHERE skill.id = $1;
             `;
 
       const result = await this.client.query(sqlQuery, [skillId]);
@@ -247,7 +249,7 @@ class Database {
                 FROM skill;
             `;
 
-      const result = await this.client.query(sqlQuery, [skillId]);
+      const result = await this.client.query(sqlQuery);
 
       if (result.rows.length > 0) {
         const skills = result.rows;
@@ -257,7 +259,6 @@ class Database {
         });
         return skills;
       } else {
-        console.log(`Skill with ID ${skillId} not found.`);
         return null;
       }
     } catch (err) {
@@ -281,11 +282,12 @@ class Database {
       const result = await this.client.query(sqlQuery, [skillName]);
 
       if (result.rows.length > 0) {
-        const skillId = result.rows[0];
+        const skillId = result.rows[0].id;
         console.log(`Skill ID: ${skillId}}`);
-        return skillId;
+
+        const skill = await this.getSkill(skillId);
+        return skill;
       } else {
-        console.log(`Skill with ID ${skillId} not found.`);
         return null;
       }
     } catch (err) {
@@ -328,7 +330,8 @@ class Database {
 
       await this.client.query(deleteSkillQuery, [skillId]);
 
-      console.log(`Skill with ID ${specialistId} deleted successfully.`);
+      console.log(`Skill with ID ${skillId} deleted successfully.`);
+      return null;
     } catch (err) {
       console.error("Error executing query", err);
     } finally {
@@ -339,10 +342,11 @@ class Database {
   // interviews
   async getInterview(interviewId) {
     try {
+      this.client = new Client(this.config);
       await this.client.connect();
 
       const sqlQuery = `
-                SELECT interview.id AS interview_id, interview.name AS interview_name, interview.start_date as interview_start_date, array_agg(skill.name) AS skills, interview.specialist as interview_specialist 
+                SELECT interview.id AS interview_id, interview.name AS interview_name, interview.start_time as interview_start_time, COALESCE(jsonb_agg(skill.name) FILTER (WHERE skill.name IS NOT NULL), '[]'::jsonb) AS skills, interview.specialist as interview_specialist 
                 FROM interview
                 LEFT JOIN interview_skill ON interview.id = interview_skill.interview
                 LEFT JOIN skill ON interview_skill.skill = skill.id
@@ -351,20 +355,19 @@ class Database {
             `;
 
       const result = await this.client.query(sqlQuery, [interviewId]);
-
       if (result.rows.length > 0) {
         const row = result.rows[0];
         console.log(
           `Interview ID: ${row.interview_id}, Name: ${
             row.interview_name
-          }, Date: ${row.interview_start_date}, Skills: ${row.skills.join(
+          }, Date: ${row.interview_start_time}, Skills: ${row.skills.join(
             ", "
-          )}, Specialist ID: ${row.specialist}`
+          )}, Specialist ID: ${row.interview_specialist}`
         );
+        return row;
       } else {
         console.log(`Interview with ID ${interviewId} not found.`);
       }
-      return row;
     } catch (err) {
       console.error("Error executing query", err);
     } finally {
@@ -374,10 +377,11 @@ class Database {
 
   async getInterviewList() {
     try {
+      this.client = new Client(this.config);
       await this.client.connect();
 
       const sqlQuery = `
-                SELECT interview.id AS interview_id, interview.name AS interview_name, interview.start_date as interview_start_date, array_agg(skill.name) AS skills, interview.specialist as interview_specialist 
+                SELECT interview.id AS interview_id, interview.name AS interview_name, interview.start_time as interview_start_time, COALESCE(jsonb_agg(skill.name) FILTER (WHERE skill.name IS NOT NULL), '[]'::jsonb) AS skills, interview.specialist as interview_specialist 
                 FROM interview
                 LEFT JOIN interview_skill ON interview.id = interview_skill.interview
                 LEFT JOIN skill ON interview_skill.skill = skill.id
@@ -392,9 +396,9 @@ class Database {
           console.log(
             `Interview ID: ${row.interview_id}, Name: ${
               row.interview_name
-            }, Date: ${row.interview_start_date}, Skills: ${row.skills.join(
+            }, Date: ${row.interview_start_time}, Skills: ${row.skills.join(
               ", "
-            )}, Specialist ID: ${row.specialist}`
+            )}, Specilist ID: ${row.interview_specialist}`
           );
         });
         return result.rows;
@@ -408,12 +412,13 @@ class Database {
     }
   }
 
-  async createInterview(candidateName, startTime, skillIdList, specialistId) {
+  async createInterview(candidateName, startTime, specialistId, skillIdList) {
     try {
+      this.client = new Client(this.config);
       await this.client.connect();
 
       const insertInterviewQuery = `
-                INSERT INTO interview (ame, start_date, specialist)
+                INSERT INTO interview (name, start_time, specialist)
                 VALUES ($1, $2, $3)
                 RETURNING id;
             `;
@@ -425,18 +430,25 @@ class Database {
       ]);
       const interviewId = interviewResult.rows[0].id;
 
-      const insertSkillQuery = `
-                INSERT INTO specialist_skill (interview, skill)
+      const insertInterviewSkillQuery = `
+                INSERT INTO interview_skill (interview, skill)
                 VALUES ($1, $2);
             `;
 
       for (const skillId of skillIdList) {
-        await this.client.query(insertSkillQuery, [specialistId, skillId]);
+        await this.client.query(insertInterviewSkillQuery, [
+          interviewId,
+          skillId,
+        ]);
       }
 
       console.log(`Interview with ID ${interviewId} created successfully.`);
+      const interview = await this.getInterview(interviewId);
+      console.log(interview);
+      return interview;
     } catch (err) {
-      console.error("Error creating specialist", err);
+      console.error("Error creating interview", err);
+      return null;
     } finally {
       await this.client.end();
     }
@@ -444,25 +456,26 @@ class Database {
 
   async deleteInterview(interviewId) {
     try {
+      this.client = new Client(this.config);
       await this.client.connect();
 
-      const deleteSkillsQuery = `
-                DELETE FROM specialist_skill
-                WHERE specialist = $1;
+      const deleteInterviewsQuery = `
+                DELETE FROM interview_skill
+                WHERE interview = $1;
             `;
 
-      await this.client.query(deleteSkillsQuery, [specialistId]);
+      await this.client.query(deleteInterviewsQuery, [interviewId]);
 
-      const deleteSpecialistQuery = `
-                DELETE FROM specialist
-                WHERE specialist = $1;
+      const deleteInterviewQuery = `
+                DELETE FROM interview
+                WHERE id = $1;
             `;
 
-      await this.client.query(deleteSpecialistQuery, [specialistId]);
+      await this.client.query(deleteInterviewQuery, [interviewId]);
 
-      console.log(`Specialist with ID ${specialistId} deleted successfully.`);
+      console.log(`Interview with ID ${interviewId} deleted successfully.`);
     } catch (err) {
-      console.error("Error updating specialist", err);
+      console.error("Error deleting interview", err);
     } finally {
       await this.client.end();
     }
@@ -470,6 +483,7 @@ class Database {
 
   async changeInterviewSpecialist(interviewId, specialistId) {
     try {
+      this.client = new Client(this.config);
       await this.client.connect();
 
       const updateInteerviewSpecialistQuery = `

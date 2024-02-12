@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
+    <script type="module" src="index.js"></script>
     <title>HR Management App</title>
 </head>
+
 <body>
     <header>
         <h1>HR Management App</h1>
     </header>
+
+    <div id="root"></div>
 
     <main>
         <!-- Specialist List -->
@@ -20,25 +25,62 @@
             </ul>
         </section>
 
-        <!-- Add Specialist Form -->
-        <section id="add-specialist">
-            <h2>Add Specialist</h2>
-            <form id="addSpecialistForm">
-                <!-- Form fields for adding a specialist -->
-                <label for="specialistName">Full Name:</label>
-                <input type="text" id="specialistName" required>
+        <!-- Specialist Management Section -->
+        <section id="specialist-management">
+            <h2>Specialist Management</h2>
 
-                <label for="startTime">Available Time (Start):</label>
-                <input type="time" id="startTime" required>
+            <!-- Add Specialist Form -->
+            <div id="add-specialist-form">
+                <h3>Add Specialist</h3>
+                <form id="addSpecialistForm">
+                    <!-- Form fields for adding a specialist -->
+                    <label for="specialistName">Full Name:</label>
+                    <input type="text" id="specialistName" required>
 
-                <label for="endTime">Available Time (End):</label>
-                <input type="time" id="endTime" required>
+                    <label for="startTime">Available Time (Start):</label>
+                    <input type="time" id="startTime" required>
 
-                <!-- Add more form fields as needed -->
+                    <label for="endTime">Available Time (End):</label>
+                    <input type="time" id="endTime" required>
 
-                <button type="submit">Add Specialist</button>
-            </form>
+                    <label for="specialistSkills">Specialist Skills:</label>
+                    <div id="skillsCheckboxList">
+                        <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
+                    </div>
+
+                    <!-- Add more form fields as needed -->
+
+                    <button type="submit" id="addSpecialistBtn">Add Specialist</button>
+                </form>
+            </div>
+
+            <!-- Update Specialist Form -->
+            <div id="update-specialist-form" style="display: none;">
+                <h3>Update Specialist</h3>
+                <form id="updateSpecialistForm">
+                    <!-- Form fields for updating a specialist -->
+                    <label for="updateSpecialistName">Full Name:</label>
+                    <input type="text" id="updateSpecialistName" required>
+
+                    <label for="updateStartTime">Available Time (Start):</label>
+                    <input type="time" id="updateStartTime" required>
+
+                    <label for="updateEndTime">Available Time (End):</label>
+                    <input type="time" id="updateEndTime" required>
+
+                    <label for="updateSpecialistSkills">Specialist Skills:</label>
+                    <div id="updateSkillsCheckboxList">
+                        <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
+                    </div>
+
+                    <!-- Add more form fields as needed -->
+
+                    <button type="button" id="saveUpdateSpecialistBtn">Save</button>
+                </form>
+            </div>
         </section>
+
+
 
         <!-- Skills List -->
         <section id="skills-list">
@@ -71,23 +113,20 @@
         </section>
 
         <!-- Manage Interviews Form -->
-        <section id="manage-interviews">
-            <h2>Manage Interviews</h2>
-            <form id="manageInterviewsForm">
+        <section id="add-interview">
+            <h2>Add Interview</h2>
+            <form id="addInterviewForm">
                 <!-- Form fields for managing interviews -->
                 <label for="candidateName">Candidate Name:</label>
                 <input type="text" id="candidateName" required>
-
-                <label for="candidateId">Candidate ID:</label>
-                <input type="text" id="candidateId" required>
 
                 <label for="interviewTime">Interview Time:</label>
                 <input type="time" id="interviewTime" required>
 
                 <label for="interviewSkills">Interview Skills:</label>
-                <select id="specialistSelect" required>
-                    <!-- Options will be dynamically added here using JavaScript -->
-                </select>
+                <div id="skillsInterviewCheckboxList">
+                    <!-- Skills with checkboxes will be dynamically added here using JavaScript -->
+                </div>
 
                 <!-- Specialist Dropdown -->
                 <label for="specialistSelect">Select Specialist:</label>
@@ -97,7 +136,7 @@
 
                 <!-- Add more form fields as needed -->
 
-                <button type="submit">Manage Interviews</button>
+                <button type="submit" id="manageInterviewsBtn">Manage Interviews</button>
             </form>
         </section>
 
@@ -106,7 +145,6 @@
     <footer>
         <p>&copy; 2024 HR Management App</p>
     </footer>
-
-    <script src="index.js"></script>
 </body>
+
 </html>

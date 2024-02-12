@@ -16,10 +16,7 @@ var database = new Database(databaseConfig);
 var interviewTime = 90;
 
 function sendGoodResponse(res, data) {
-  res.status(200).json({
-    status: "success",
-    data: data,
-  });
+  res.status(200).json(data);
 }
 
 function sendBadResponse(res, status, errorMessage, errorDetails = null) {
@@ -106,7 +103,7 @@ app.delete("/specialist/:specialistId", async function (req, res) {
   const { specialistId } = req.params;
   var specialistDelete = await database.deleteSpecialist(specialistId);
 
-  if (specialistDelete != null) {
+  if (specialistDelete == null) {
     sendGoodResponse(res, "Specialist deleted");
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
@@ -126,7 +123,7 @@ app.get("/skill", async function (req, res) {
 
 app.get("/skill/:skillId", async function (req, res) {
   const { skillId } = req.params;
-  var skill = await database.getSpecialist(skillId);
+  var skill = await database.getSkill(skillId);
 
   if (skill != null) {
     sendGoodResponse(res, skill);
@@ -137,16 +134,10 @@ app.get("/skill/:skillId", async function (req, res) {
 
 app.use("/skill", express.json());
 app.post("/skill", async function (req, res) {
-  const { name, startTime, endTime, skills } = req.body;
-  var skillCreate = await database.createSpecialist(
-    name,
-    startTime,
-    endTime,
-    skills
-  );
-
+  const { name } = req.body;
+  var skillCreate = await database.createSkill(name);
   if (skillCreate != null) {
-    sendGoodResponse(res, "Specialist created");
+    sendGoodResponse(res, skillCreate);
   } else {
     sendBadResponse(res, 500, "Something went wrong");
   }
@@ -155,17 +146,11 @@ app.post("/skill", async function (req, res) {
 app.use("/skill/:skillId", express.json());
 app.patch("/skill/:skillId", async function (req, res) {
   const { skillId } = req.params;
-  const { name, startTime, endTime, skills } = req.body;
-  var skillUpdate = await database.updateSpecialist(
-    skillId,
-    name,
-    startTime,
-    endTime,
-    skills
-  );
+  const { name } = req.body;
+  var skillUpdate = await database.updateSkill(skillId, name);
 
-  if (skillUpdate != null) {
-    sendGoodResponse(res, "Specialist updated");
+  if (skillUpdate == null) {
+    sendGoodResponse(res, "Skill updated");
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
   }
@@ -173,10 +158,10 @@ app.patch("/skill/:skillId", async function (req, res) {
 
 app.delete("/skill/:skillId", async function (req, res) {
   const { skillId } = req.params;
-  var skillDelete = await database.deleteSpecialist(skillId);
+  var skillDelete = await database.deleteSkill(skillId);
 
-  if (skillDelete != null) {
-    sendGoodResponse(res, "Specialist deleted");
+  if (skillDelete == null) {
+    sendGoodResponse(res, "Skill deleted");
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
   }
@@ -184,7 +169,7 @@ app.delete("/skill/:skillId", async function (req, res) {
 
 // interviews
 app.get("/interview", async function (req, res) {
-  var interviewList = await database.getSpecialistList();
+  var interviewList = await database.getInterviewList();
 
   if (interviewList != null) {
     sendGoodResponse(res, interviewList);
@@ -195,7 +180,7 @@ app.get("/interview", async function (req, res) {
 
 app.get("/interview/:interviewId", async function (req, res) {
   const { interviewId } = req.params;
-  var interview = await database.getSpecialist(interviewId);
+  var interview = await database.getInterview(interviewId);
 
   if (interview != null) {
     sendGoodResponse(res, interview);
@@ -206,16 +191,15 @@ app.get("/interview/:interviewId", async function (req, res) {
 
 app.use("/interview", express.json());
 app.post("/interview", async function (req, res) {
-  const { name, startTime, endTime, skills } = req.body;
-  var interviewCreate = await database.createSpecialist(
+  const { name, startTime, specialistId, skills } = req.body;
+  var interviewCreate = await database.createInterview(
     name,
     startTime,
-    endTime,
+    specialistId,
     skills
   );
-
   if (interviewCreate != null) {
-    sendGoodResponse(res, "Specialist created");
+    sendGoodResponse(res, interviewCreate);
   } else {
     sendBadResponse(res, 500, "Something went wrong");
   }
@@ -224,17 +208,17 @@ app.post("/interview", async function (req, res) {
 app.use("/interview/:interviewId", express.json());
 app.patch("/interview/:interviewId", async function (req, res) {
   const { interviewId } = req.params;
-  const { name, startTime, endTime, skills } = req.body;
+  const { name, startTime, specialistId, skills } = req.body;
   var interviewUpdate = await database.updateSpecialist(
     interviewId,
     name,
     startTime,
-    endTime,
+    specialistId,
     skills
   );
 
-  if (interviewUpdate != null) {
-    sendGoodResponse(res, "Specialist updated");
+  if (interviewUpdate == null) {
+    sendGoodResponse(res, "Interview updated");
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
   }
@@ -242,10 +226,10 @@ app.patch("/interview/:interviewId", async function (req, res) {
 
 app.delete("/interview/:interviewId", async function (req, res) {
   const { interviewId } = req.params;
-  var interviewDelete = await database.deleteSpecialist(interviewId);
+  var interviewDelete = await database.deleteInterview(interviewId);
 
-  if (interviewDelete != null) {
-    sendGoodResponse(res, "Specialist deleted");
+  if (interviewDelete == null) {
+    sendGoodResponse(res, "Interview deleted");
   } else {
     sendBadResponse(res, 422, "No data in database with such ID");
   }
